@@ -1,0 +1,249 @@
+/* Site0 Ticketing — admin styles (RTL-aware via logical properties). */
+
+.site0-ticketing .st-ticket-link {
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.st-unread-dot {
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	margin-inline-end: 4px;
+	border-radius: 50%;
+	background: #d63638;
+	vertical-align: middle;
+}
+
+.st-badge {
+	display: inline-block;
+	padding: 2px 10px;
+	border-radius: 12px;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.6;
+}
+
+.st-badge--waiting {
+	background: #f0f6fc;
+	color: #2271b1;
+	border: 1px solid #c5d9ed;
+}
+
+.st-badge--answered {
+	background: #edfaef;
+	color: #008a20;
+	border: 1px solid #bfe6c9;
+}
+
+.st-badge--closed {
+	background: #f6f7f7;
+	color: #646970;
+	border: 1px solid #dcdcde;
+}
+
+.st-meta {
+	color: #646970;
+	font-size: 12px;
+	margin-inline-start: 8px;
+}
+
+.st-unread-count {
+	background: #d63638;
+	color: #fff;
+	border-radius: 8px;
+	padding: 0 6px;
+	font-weight: 600;
+}
+
+.st-thread {
+	margin: 16px 0;
+}
+
+.st-message {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	padding: 12px 16px;
+	margin: 12px 0;
+	max-width: 720px;
+}
+
+.st-message.st-admin {
+	border-inline-start: 4px solid #2271b1;
+	background: #f6f9fc;
+	margin-inline-start: 12%;
+}
+
+.st-message.st-tenant {
+	border-inline-start: 4px solid #8c8f94;
+	margin-inline-end: 12%;
+}
+
+.st-message__head {
+	margin-bottom: 6px;
+}
+
+.st-message__body p {
+	margin: 6px 0;
+}
+
+.st-reply {
+	margin: 20px 0;
+}
+
+.st-actions {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	margin: 16px 0;
+}
+
+.st-actions form {
+	margin: 0;
+}
+
+.st-actions .submit {
+	margin: 0;
+	padding: 0;
+}
+
+.st-closed-note {
+	font-style: italic;
+	color: #646970;
+}
+
+.st-site-box {
+	margin: 16px 0;
+	max-width: 720px;
+}
+
+.st-site-box th {
+	width: 120px;
+}
+
+.st-settings {
+	margin: 24px 0;
+	max-width: 720px;
+	padding: 12px 16px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+}
+
+.st-settings label {
+	font-weight: 600;
+}
+
+.st-settings .submit {
+	margin: 8px 0 0;
+	padding: 0;
+}
+
+.st-attachments {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-block-start: 10px;
+	padding-block-start: 10px;
+	border-block-start: 1px solid #dcdcde;
+}
+
+.st-attachment {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	max-width: 200px;
+	text-decoration: none;
+	font-size: 12px;
+	color: #2271b1;
+	word-break: break-word;
+}
+
+.st-attachment__thumb {
+	width: 72px;
+	height: 72px;
+	object-fit: cover;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	background: #f6f7f7;
+}
+
+.st-attachment__icon {
+	font-size: 28px;
+	width: 72px;
+	height: 40px;
+	color: #646970;
+}
+
+.st-attachment__name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Attachment upload box (shared by all ticket forms). */
+.st-attachment-field input[type="file"] {
+	width: 100%;
+	max-width: 480px;
+	box-sizing: border-box;
+	padding: 14px 16px;
+	border: 2px dashed #c3c4c7;
+	border-radius: 8px;
+	background: #f6f7f7;
+	color: #50575e;
+	font-size: 13px;
+	line-height: 1.6;
+	cursor: pointer;
+	transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.st-attachment-field input[type="file"]:hover,
+.st-attachment-field input[type="file"]:focus-within {
+	border-color: #2271b1;
+	background: #f0f6fc;
+}
+
+.st-attachment-field input[type="file"]:focus-visible {
+	outline: 2px solid #2271b1;
+	outline-offset: 2px;
+}
+
+.st-attachment-field input[type="file"]::file-selector-button,
+.st-attachment-field input[type="file"]::-webkit-file-upload-button {
+	padding: 3px 12px;
+	margin-inline-end: 12px;
+	border: 1px solid #2271b1;
+	border-radius: 3px;
+	background: #f6f7f7;
+	color: #2271b1;
+	font-size: 13px;
+	line-height: 1.6;
+	cursor: pointer;
+	transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.st-attachment-field input[type="file"]::file-selector-button:hover,
+.st-attachment-field input[type="file"]::file-selector-button:focus-visible,
+.st-attachment-field input[type="file"]::-webkit-file-upload-button:hover,
+.st-attachment-field input[type="file"]::-webkit-file-upload-button:focus-visible {
+	border-color: #135e96;
+	background: #f0f6fc;
+	color: #135e96;
+}
+
+.st-attachment-field .description {
+	margin-block-start: 8px;
+	color: #646970;
+}
+
+/* Standalone (non-table) variant used in reply forms. */
+.st-attachment-field > label {
+	display: block;
+	font-weight: 600;
+	margin-block-end: 4px;
+}
+
+form > .st-attachment-field {
+	margin-block: 8px;
+}

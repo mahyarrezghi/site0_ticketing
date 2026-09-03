@@ -1,0 +1,250 @@
+# Persian translation for Site0 Ticketing.
+# This file is distributed under the same license as the Site0 Ticketing plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Site0 Ticketing 1.1.0\n"
+"Report-Msgid-Bugs-To: https://site0.com\n"
+"POT-Creation-Date: 2026-09-02 00:00+0000\n"
+"PO-Revision-Date: 2026-09-02 23:59+0330\n"
+"Last-Translator: Mahyar Rezghi\n"
+"Language-Team: Persian\n"
+"Language: fa_IR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Site0 Ticketing\n"
+"X-Domain: site0-ticketing\n"
+
+#. Plugin Description of the plugin
+msgid "Support ticketing for the Site0 multisite network. Tenants open tickets from their subsite dashboard; network admins answer from the network dashboard."
+msgstr "سیستم پشتیبانی تیکتی برای شبکه چندسایتی Site0. کاربران هر سایت از داشبورد خود تیکت ثبت می‌کنند و مدیران شبکه از داشبورد شبکه پاسخ می‌دهند."
+
+#. Status label
+msgid "Waiting"
+msgstr "در انتظار پاسخ"
+
+#. Status label
+msgid "Answered"
+msgstr "پاسخ داده شد"
+
+#. Status label
+msgid "Closed"
+msgstr "بسته شده"
+
+msgid "Please enter a subject."
+msgstr "لطفاً موضوع را وارد کنید."
+
+msgid "Please describe the issue."
+msgstr "لطفاً شرح مشکل را وارد کنید."
+
+msgid "Could not create the ticket."
+msgstr "ایجاد تیکت ممکن نبود."
+
+msgid "Please enter a reply."
+msgstr "لطفاً پاسخ را وارد کنید."
+
+msgid "Invalid ticket."
+msgstr "تیکت نامعتبر است."
+
+msgid "Could not save the reply."
+msgstr "ذخیره پاسخ ممکن نبود."
+
+msgid "No tickets yet."
+msgstr "هنوز تیکتی وجود ندارد."
+
+msgid "Subject"
+msgstr "موضوع"
+
+msgid "Status"
+msgstr "وضعیت"
+
+msgid "Last Update"
+msgstr "آخرین به‌روزرسانی"
+
+msgctxt "ticket status indicator"
+msgid "Unread"
+msgstr "خوانده‌نشده"
+
+msgid "Open a new ticket"
+msgstr "ایجاد تیکت جدید"
+
+msgid "Issue"
+msgstr "شرح مشکل"
+
+msgid "Submit Ticket"
+msgstr "ارسال تیکت"
+
+msgid "Your tickets"
+msgstr "تیکت‌های شما"
+
+msgid "Search tickets"
+msgstr "جستجوی تیکت‌ها"
+
+msgid "Back to tickets"
+msgstr "بازگشت به تیکت‌ها"
+
+msgid "Opened on"
+msgstr "تاریخ ایجاد:"
+
+msgid "Add a reply"
+msgstr "افزودن پاسخ"
+
+msgid "Submit Reply"
+msgstr "ارسال پاسخ"
+
+msgid "Close Ticket"
+msgstr "بستن تیکت"
+
+msgid "This ticket is closed."
+msgstr "این تیکت بسته شده است."
+
+msgid "Ticket not found or you do not have access."
+msgstr "تیکت یافت نشد یا شما اجازه دسترسی به آن را ندارید."
+
+msgid "Security check failed."
+msgstr "بررسی امنیتی ناموفق بود."
+
+msgid "You are not allowed to do this."
+msgstr "شما اجازه انجام این کار را ندارید."
+
+msgid "You are not allowed to access tickets."
+msgstr "شما اجازه دسترسی به تیکت‌ها را ندارید."
+
+msgid "All Tickets"
+msgstr "همه تیکت‌ها"
+
+msgid "Ticket Settings"
+msgstr "تنظیمات تیکت"
+
+msgid "Settings"
+msgstr "تنظیمات"
+
+msgid "Settings saved."
+msgstr "تنظیمات ذخیره شد."
+
+msgid "Save Settings"
+msgstr "ذخیره تنظیمات"
+
+msgid "Delete all ticket data when the plugin is uninstalled"
+msgstr "حذف کامل داده‌های تیکت هنگام حذف افزونه"
+
+msgid "If unchecked, tickets and replies are kept in the database after uninstall. Uninstalling never affects other sites."
+msgstr "در صورت عدم انتخاب، تیکت‌ها و پاسخ‌ها پس از حذف افزونه در پایگاه‌داده باقی می‌مانند. حذف افزونه هرگز بر سایت‌های دیگر اثری ندارد."
+
+msgid "Site"
+msgstr "سایت"
+
+msgid "Author"
+msgstr "نویسنده"
+
+msgid "Close"
+msgstr "بستن"
+
+msgid "Mark waiting"
+msgstr "علامت‌گذاری به‌عنوان در انتظار پاسخ"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "Delete this ticket permanently?"
+msgstr "این تیکت برای همیشه حذف شود؟"
+
+msgid "Unknown user"
+msgstr "کاربر ناشناس"
+
+msgid "Reply"
+msgstr "پاسخ"
+
+msgid "Reply to this ticket"
+msgstr "پاسخ به این تیکت"
+
+msgid "Reopen Ticket"
+msgstr "بازگشایی تیکت"
+
+msgid "Back"
+msgstr "بازگشت"
+
+msgid "Ticket not found."
+msgstr "تیکت یافت نشد."
+
+msgid "You have a new reply on your ticket(s)."
+msgstr "پاسخ جدیدی برای تیکت شما ارسال شده است."
+
+msgid "%d ticket has new replies."
+msgid_plural "%d tickets have new replies."
+msgstr[0] "%d تیکت پاسخ جدید دارد."
+msgstr[1] "%d تیکت پاسخ جدید دارند."
+
+msgid "View your tickets"
+msgstr "مشاهده تیکت‌های شما"
+
+msgid "Site0 Ticketing requires a WordPress multisite network."
+msgstr "افزونه Site0 Ticketing به شبکه چندسایتی وردپرس نیاز دارد."
+
+msgid "Site0 Ticketing can only be activated network-wide from the Network Admin."
+msgstr "افزونه Site0 Ticketing فقط می‌تواند از بخش مدیریت شبکه، در کل شبکه فعال شود."
+
+msgid "Tickets"
+msgstr "پشتیبانی"
+
+#. Attachment field label
+msgid "Attachments"
+msgstr "پیوست‌ها"
+
+#. translators: 1: allowed file types, 2: maximum size, 3: maximum file count.
+msgid "Optional. %1$s only, up to %2$s each, %3$d files max."
+msgstr "اختیاری. فقط %1$s، حداکثر تا %2$s برای هر فایل و حداکثر %3$d فایل."
+
+msgid "Images, ZIP or RAR"
+msgstr "تصاویر، ZIP یا RAR"
+
+#. translators: %d: maximum number of files.
+msgid "Too many attachments. A message can hold up to %d files."
+msgstr "تعداد پیوست‌ها بیش از حد مجاز است. هر پیام حداکثر می‌تواند %d فایل داشته باشد."
+
+#. translators: %s: file name.
+msgid "%s could not be attached:"
+msgstr "افزودن %s ممکن نبود:"
+
+msgid "the upload failed."
+msgstr "بارگذاری فایل ناموفق بود."
+
+msgid "the upload is not valid."
+msgstr "فایل بارگذاری‌شده معتبر نیست."
+
+#. translators: %s: maximum file size.
+msgid "the file exceeds the %s size limit."
+msgstr "حجم فایل از سقف مجاز %s بیشتر است."
+
+msgid "only images and zip/rar archives are allowed."
+msgstr "فقط تصاویر و فایل‌های فشرده ZIP یا RAR مجاز هستند."
+
+msgid "the file content does not match an image."
+msgstr "محتوای فایل یک تصویر معتبر نیست."
+
+msgid "the file content does not match a zip/rar archive."
+msgstr "محتوای فایل یک فایل فشرده ZIP یا RAR معتبر نیست."
+
+msgid "the file type could not be verified."
+msgstr "نوع فایل قابل تأیید نبود."
+
+#. translators: %s: file name.
+msgid "%s could not be saved."
+msgstr "ذخیره %s ممکن نبود."
+
+msgid "The attachment storage directory is not writable."
+msgstr "پوشه ذخیره پیوست‌ها قابل نوشتن نیست."
+
+msgid "Attachment not found."
+msgstr "پیوست یافت نشد."
+
+msgid "You are not allowed to access this attachment."
+msgstr "شما اجازه دسترسی به این پیوست را ندارید."
+
+msgid "The attachment file is missing."
+msgstr "فایل پیوست یافت نشد."
+
+#. Plugin Author header (shown as "By مهیار رزقی" for fa_IR only)
+msgid "Mahyar Rezghi"
+msgstr "مهیار رزقی"
