@@ -90,7 +90,21 @@ class Site0_Ticketing_Tickets {
 			return new WP_Error( 'site0_ticketing_db_error', __( 'Could not create the ticket.', 'site0-ticketing' ) );
 		}
 
-		return (int) $wpdb->insert_id;
+		$ticket_id = (int) $wpdb->insert_id;
+
+		/**
+		 * Fires after a ticket is created.
+		 *
+		 * @since 1.2.0
+		 *
+		 * @param int    $ticket_id Ticket ID.
+		 * @param int    $blog_id   Blog the ticket belongs to.
+		 * @param int    $user_id   User who opened the ticket.
+		 * @param string $subject   Ticket subject.
+		 */
+		do_action( 'site0_ticketing_ticket_created', $ticket_id, $blog_id, $user_id, $subject );
+
+		return $ticket_id;
 	}
 
 	/**

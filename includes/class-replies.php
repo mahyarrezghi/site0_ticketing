@@ -63,7 +63,21 @@ class Site0_Ticketing_Replies {
 			return new WP_Error( 'site0_ticketing_db_error', __( 'Could not save the reply.', 'site0-ticketing' ) );
 		}
 
-		return (int) $wpdb->insert_id;
+		$reply_id = (int) $wpdb->insert_id;
+
+		/**
+		 * Fires after a reply is added to a ticket.
+		 *
+		 * @since 1.2.0
+		 *
+		 * @param int    $reply_id    Reply ID.
+		 * @param int    $ticket_id   Ticket ID.
+		 * @param string $author_type Reply author type (tenant|admin).
+		 * @param int    $user_id     Reply author user ID.
+		 */
+		do_action( 'site0_ticketing_reply_added', $reply_id, $ticket_id, $author_type, $user_id );
+
+		return $reply_id;
 	}
 
 	/**

@@ -3,7 +3,7 @@
  * Plugin Name:       Site0 Ticketing
  * Plugin URI:        https://site0.ir
  * Description:       Support ticketing for the Site0 multisite network. Tenants open tickets from their subsite dashboard; network admins answer from the network dashboard.
- * Version:           1.1.0
+ * Version:           1.2.0
  * Requires at least: 5.0
  * Requires PHP:      7.4
  * Author:            Mahyar Rezghi
