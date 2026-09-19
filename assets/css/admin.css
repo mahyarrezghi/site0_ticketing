@@ -15,6 +15,14 @@
 	vertical-align: middle;
 }
 
+.st-ticket-number {
+	display: inline-block;
+	font-family: Consolas, Monaco, monospace;
+	font-size: 12px;
+	font-weight: 600;
+	color: #646970;
+}
+
 .st-badge {
 	display: inline-block;
 	padding: 2px 10px;

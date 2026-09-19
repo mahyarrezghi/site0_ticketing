@@ -15,6 +15,7 @@ Support ticketing for the Site0 WordPress multisite network.
 ## Features
 
 - Custom network DB tables (`wp_s0_tickets`, `wp_s0_ticket_replies`) — no per-site data, no blog switching.
+- Every ticket gets a unique random 8-digit number, prefixed to its subject and searchable from both the tenant and network lists (with or without the leading `#`).
 - Ticket stages: **waiting**, **answered**, **in progress**, **closed**.
   - Tenant replies move a ticket back to *waiting*.
   - Network admin replies set it to *answered* and flag it **unread for the tenant**.

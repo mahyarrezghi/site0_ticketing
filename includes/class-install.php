@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class Site0_Ticketing_Install {
 
-	const SCHEMA_VERSION = '1.1.0';
+	const SCHEMA_VERSION = '1.3.0';
 	const DB_VERSION_OPTION = 'site0_ticketing_db_version';
 
 	/**
@@ -26,6 +26,7 @@ class Site0_Ticketing_Install {
 		}
 
 		self::create_tables();
+		self::backfill_ticket_numbers();
 		update_site_option( self::DB_VERSION_OPTION, self::SCHEMA_VERSION );
 	}
 
@@ -37,6 +38,7 @@ class Site0_Ticketing_Install {
 
 		if ( version_compare( $version, self::SCHEMA_VERSION, '<' ) ) {
 			self::create_tables();
+			self::backfill_ticket_numbers();
 			update_site_option( self::DB_VERSION_OPTION, self::SCHEMA_VERSION );
 		}
 	}
@@ -55,6 +57,7 @@ class Site0_Ticketing_Install {
 
 		$tickets_sql = "CREATE TABLE {$tickets_table} (
 			id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+			ticket_number VARCHAR(8) DEFAULT NULL,
 			blog_id BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
 			user_id BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
 			subject VARCHAR(255) NOT NULL DEFAULT '',
@@ -65,6 +68,7 @@ class Site0_Ticketing_Install {
 			created_at DATETIME NOT NULL,
 			updated_at DATETIME NOT NULL,
 			PRIMARY KEY  (id),
+			UNIQUE KEY ticket_number (ticket_number),
 			KEY blog_id (blog_id),
 			KEY user_id (user_id),
 			KEY status (status),
@@ -108,5 +112,41 @@ class Site0_Ticketing_Install {
 		) {$charset_collate};";
 
 		dbDelta( $attachments_sql );
+	}
+
+	/**
+	 * Assigns an 8-digit ticket number to any tickets that lack one.
+	 *
+	 * Run after the column is added so tickets created before v1.3.0 (and any
+	 * row inserted while the column was nullable) get a unique number.
+	 */
+	public static function backfill_ticket_numbers() {
+		global $wpdb;
+
+		$table = $wpdb->base_prefix . 's0_tickets';
+
+		$ids = $wpdb->get_col(
+			"SELECT id FROM {$table} WHERE ticket_number IS NULL OR ticket_number = ''"
+		);
+
+		if ( empty( $ids ) ) {
+			return;
+		}
+
+		foreach ( $ids as $ticket_id ) {
+			$number = Site0_Ticketing_Tickets::generate_unique_number();
+
+			if ( '' === $number ) {
+				continue;
+			}
+
+			$wpdb->update(
+				$table,
+				array( 'ticket_number' => $number ),
+				array( 'id' => (int) $ticket_id ),
+				array( '%s' ),
+				array( '%d' )
+			);
+		}
 	}
 }

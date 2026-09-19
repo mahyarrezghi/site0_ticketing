@@ -44,6 +44,48 @@ class Site0_Ticketing_Tickets {
 	}
 
 	/**
+	 * Formats a ticket number for display (e.g. "#12345678").
+	 *
+	 * @param object|string $ticket Ticket row or a raw number.
+	 * @return string Empty string when no number is available.
+	 */
+	public static function format_number( $ticket ) {
+		$number = is_object( $ticket )
+			? ( isset( $ticket->ticket_number ) ? $ticket->ticket_number : '' )
+			: (string) $ticket;
+
+		$number = trim( (string) $number );
+
+		return '' === $number ? '' : '#' . $number;
+	}
+
+	/**
+	 * Generates a random, unique 8-digit ticket number.
+	 *
+	 * @return string Number between 10000000 and 99999999, or '' on failure.
+	 */
+	public static function generate_unique_number() {
+		global $wpdb;
+
+		$table = $wpdb->base_prefix . 's0_tickets';
+		$max   = 15;
+
+		for ( $i = 0; $i < $max; $i++ ) {
+			$number = (string) random_int( 10000000, 99999999 );
+
+			$exists = $wpdb->get_var(
+				$wpdb->prepare( "SELECT id FROM {$table} WHERE ticket_number = %s", $number )
+			);
+
+			if ( null === $exists ) {
+				return $number;
+			}
+		}
+
+		return '';
+	}
+
+	/**
 	 * Creates a ticket.
 	 *
 	 * @param array $args {
@@ -72,21 +114,27 @@ class Site0_Ticketing_Tickets {
 
 		$now = current_time( 'mysql' );
 
-		$result = $wpdb->insert(
-			$wpdb->base_prefix . 's0_tickets',
-			array(
-				'blog_id'          => $blog_id,
-				'user_id'          => $user_id,
-				'subject'          => $subject,
-				'message'          => $message,
-				'status'           => self::STATUS_WAITING,
-				'unread_by_tenant' => 0,
-				'unread_by_admin'  => 1,
-				'created_at'       => $now,
-				'updated_at'       => $now,
-			),
-			array( '%d', '%d', '%s', '%s', '%s', '%d', '%d', '%s', '%s' )
+		$data    = array(
+			'blog_id'          => $blog_id,
+			'user_id'          => $user_id,
+			'subject'          => $subject,
+			'message'          => $message,
+			'status'           => self::STATUS_WAITING,
+			'unread_by_tenant' => 0,
+			'unread_by_admin'  => 1,
+			'created_at'       => $now,
+			'updated_at'       => $now,
 		);
+		$formats = array( '%d', '%d', '%s', '%s', '%s', '%d', '%d', '%s', '%s' );
+
+		$ticket_number = self::generate_unique_number();
+
+		if ( '' !== $ticket_number ) {
+			$data['ticket_number'] = $ticket_number;
+			$formats[]             = '%s';
+		}
+
+		$result = $wpdb->insert( $wpdb->base_prefix . 's0_tickets', $data, $formats );
 
 		if ( false === $result ) {
 			return new WP_Error( 'site0_ticketing_db_error', __( 'Could not create the ticket.', 'site0-ticketing' ) );
@@ -148,8 +196,9 @@ class Site0_Ticketing_Tickets {
 		}
 
 		if ( '' !== $search ) {
-			$where    .= ' AND (subject LIKE %s OR message LIKE %s)';
-			$like      = '%' . $wpdb->esc_like( $search ) . '%';
+			$where    .= ' AND (subject LIKE %s OR message LIKE %s OR ticket_number LIKE %s)';
+			$like      = '%' . $wpdb->esc_like( ltrim( $search, '#' ) ) . '%';
+			$params[]  = $like;
 			$params[]  = $like;
 			$params[]  = $like;
 		}
@@ -186,8 +235,9 @@ class Site0_Ticketing_Tickets {
 		}
 
 		if ( '' !== $search ) {
-			$where    .= ' AND (subject LIKE %s OR message LIKE %s)';
-			$like      = '%' . $wpdb->esc_like( $search ) . '%';
+			$where    .= ' AND (subject LIKE %s OR message LIKE %s OR ticket_number LIKE %s)';
+			$like      = '%' . $wpdb->esc_like( ltrim( $search, '#' ) ) . '%';
+			$params[]  = $like;
 			$params[]  = $like;
 			$params[]  = $like;
 		}
@@ -222,8 +272,9 @@ class Site0_Ticketing_Tickets {
 		}
 
 		if ( '' !== $search ) {
-			$where    .= ' AND (subject LIKE %s OR message LIKE %s)';
-			$like      = '%' . $wpdb->esc_like( $search ) . '%';
+			$where    .= ' AND (subject LIKE %s OR message LIKE %s OR ticket_number LIKE %s)';
+			$like      = '%' . $wpdb->esc_like( ltrim( $search, '#' ) ) . '%';
+			$params[]  = $like;
 			$params[]  = $like;
 			$params[]  = $like;
 		}
@@ -259,8 +310,9 @@ class Site0_Ticketing_Tickets {
 		}
 
 		if ( '' !== $search ) {
-			$where    .= ' AND (subject LIKE %s OR message LIKE %s)';
-			$like      = '%' . $wpdb->esc_like( $search ) . '%';
+			$where    .= ' AND (subject LIKE %s OR message LIKE %s OR ticket_number LIKE %s)';
+			$like      = '%' . $wpdb->esc_like( ltrim( $search, '#' ) ) . '%';
+			$params[]  = $like;
 			$params[]  = $like;
 			$params[]  = $like;
 		}

@@ -239,6 +239,11 @@ class Site0_Ticketing_Network_Page {
 		<div class="wrap site0-ticketing">
 			<h1><?php esc_html_e( 'Tickets', 'site0-ticketing' ); ?></h1>
 
+			<form method="get">
+				<input type="hidden" name="page" value="site0-ticketing" />
+				<?php $table->search_box( __( 'Search tickets by subject, message or number', 'site0-ticketing' ), 'tickets' ); ?>
+			</form>
+
 			<form method="post" action="<?php echo esc_url( network_admin_url( 'admin.php?page=site0-ticketing' ) ); ?>">
 				<?php wp_nonce_field( 'site0_ticketing_network_bulk', 'site0_ticketing_nonce' ); ?>
 				<?php $table->display(); ?>
@@ -315,6 +320,10 @@ class Site0_Ticketing_Network_Page {
 			<h1><?php echo esc_html( $ticket->subject ); ?></h1>
 
 			<p>
+				<?php $ticket_number = Site0_Ticketing_Tickets::format_number( $ticket ); ?>
+				<?php if ( '' !== $ticket_number ) : ?>
+					<span class="st-ticket-number"><?php echo esc_html( $ticket_number ); ?></span>
+				<?php endif; ?>
 				<span class="st-badge st-badge--<?php echo esc_attr( $ticket->status ); ?>"><?php echo esc_html( $status ); ?></span>
 				<span class="st-meta"><?php esc_html_e( 'Opened on', 'site0-ticketing' ); ?> <?php echo esc_html( mysql2date( get_option( 'date_format' ), $ticket->created_at ) ); ?></span>
 			</p>

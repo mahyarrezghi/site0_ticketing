@@ -85,6 +85,9 @@ msgstr "تیکت‌های شما"
 msgid "Search tickets"
 msgstr "جستجوی تیکت‌ها"
 
+msgid "Search tickets by subject, message or number"
+msgstr "جستجوی تیکت‌ها بر اساس موضوع، متن یا شماره"
+
 msgid "Back to tickets"
 msgstr "بازگشت به تیکت‌ها"
 

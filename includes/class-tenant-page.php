@@ -109,7 +109,12 @@ class Site0_Ticketing_Tenant_List_Table extends WP_List_Table {
 			? '<span class="st-unread-dot" aria-label="' . esc_attr__( 'Unread', 'site0-ticketing' ) . '"></span> '
 			: '';
 
-		return '<a class="st-ticket-link" href="' . esc_url( $url ) . '">' . $dot . esc_html( $item->subject ) . '</a>';
+		$number = Site0_Ticketing_Tickets::format_number( $item );
+		$prefix = '' !== $number
+			? '<span class="st-ticket-number">' . esc_html( $number ) . '</span> '
+			: '';
+
+		return '<a class="st-ticket-link" href="' . esc_url( $url ) . '">' . $dot . $prefix . esc_html( $item->subject ) . '</a>';
 	}
 
 	/**
@@ -256,7 +261,7 @@ class Site0_Ticketing_Tenant_Page {
 			<h2><?php esc_html_e( 'Your tickets', 'site0-ticketing' ); ?></h2>
 			<form method="get">
 				<input type="hidden" name="page" value="site0-ticketing" />
-				<?php $table->search_box( __( 'Search tickets', 'site0-ticketing' ), 'tickets' ); ?>
+				<?php $table->search_box( __( 'Search tickets by subject, message or number', 'site0-ticketing' ), 'tickets' ); ?>
 				<?php $table->display(); ?>
 			</form>
 		</div>
@@ -297,6 +302,10 @@ class Site0_Ticketing_Tenant_Page {
 			<h1><?php echo esc_html( $ticket->subject ); ?></h1>
 
 			<p>
+				<?php $ticket_number = Site0_Ticketing_Tickets::format_number( $ticket ); ?>
+				<?php if ( '' !== $ticket_number ) : ?>
+					<span class="st-ticket-number"><?php echo esc_html( $ticket_number ); ?></span>
+				<?php endif; ?>
 				<span class="st-badge st-badge--<?php echo esc_attr( $ticket->status ); ?>"><?php echo esc_html( $status ); ?></span>
 				<span class="st-meta"><?php esc_html_e( 'Opened on', 'site0-ticketing' ); ?> <?php echo esc_html( mysql2date( get_option( 'date_format' ), $ticket->created_at ) ); ?></span>
 			</p>
