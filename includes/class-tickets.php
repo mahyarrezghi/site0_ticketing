@@ -56,7 +56,91 @@ class Site0_Ticketing_Tickets {
 
 		$number = trim( (string) $number );
 
-		return '' === $number ? '' : '#' . $number;
+		if ( '' === $number ) {
+			return '';
+		}
+
+		$number = '#' . $number;
+
+		return self::is_persian_locale() ? self::to_persian_digits( $number ) : $number;
+	}
+
+	/**
+	 * Whether the effective locale is Persian.
+	 *
+	 * @return bool
+	 */
+	public static function is_persian_locale() {
+		return 0 === strpos( get_locale(), 'fa' );
+	}
+
+	/**
+	 * Converts ASCII digits in a string to Persian digits.
+	 *
+	 * @param string $value Input string.
+	 * @return string
+	 */
+	public static function to_persian_digits( $value ) {
+		return strtr(
+			(string) $value,
+			array(
+				'0' => '۰',
+				'1' => '۱',
+				'2' => '۲',
+				'3' => '۳',
+				'4' => '۴',
+				'5' => '۵',
+				'6' => '۶',
+				'7' => '۷',
+				'8' => '۸',
+				'9' => '۹',
+			)
+		);
+	}
+
+	/**
+	 * Converts Persian and Arabic-Indic digits in a string to ASCII digits.
+	 *
+	 * @param string $value Input string.
+	 * @return string
+	 */
+	public static function to_latin_digits( $value ) {
+		return strtr(
+			(string) $value,
+			array(
+				'۰' => '0',
+				'۱' => '1',
+				'۲' => '2',
+				'۳' => '3',
+				'۴' => '4',
+				'۵' => '5',
+				'۶' => '6',
+				'۷' => '7',
+				'۸' => '8',
+				'۹' => '9',
+				'٠' => '0',
+				'١' => '1',
+				'٢' => '2',
+				'٣' => '3',
+				'٤' => '4',
+				'٥' => '5',
+				'٦' => '6',
+				'٧' => '7',
+				'٨' => '8',
+				'٩' => '9',
+			)
+		);
+	}
+
+	/**
+	 * Normalizes a search term for LIKE queries, converting Persian digits
+	 * to ASCII and stripping a leading ticket hash.
+	 *
+	 * @param string $search Raw search term.
+	 * @return string
+	 */
+	public static function normalize_search( $search ) {
+		return ltrim( self::to_latin_digits( $search ), '#' );
 	}
 
 	/**
@@ -197,7 +281,7 @@ class Site0_Ticketing_Tickets {
 
 		if ( '' !== $search ) {
 			$where    .= ' AND (subject LIKE %s OR message LIKE %s OR ticket_number LIKE %s)';
-			$like      = '%' . $wpdb->esc_like( ltrim( $search, '#' ) ) . '%';
+			$like      = '%' . $wpdb->esc_like( self::normalize_search( $search ) ) . '%';
 			$params[]  = $like;
 			$params[]  = $like;
 			$params[]  = $like;
@@ -236,7 +320,7 @@ class Site0_Ticketing_Tickets {
 
 		if ( '' !== $search ) {
 			$where    .= ' AND (subject LIKE %s OR message LIKE %s OR ticket_number LIKE %s)';
-			$like      = '%' . $wpdb->esc_like( ltrim( $search, '#' ) ) . '%';
+			$like      = '%' . $wpdb->esc_like( self::normalize_search( $search ) ) . '%';
 			$params[]  = $like;
 			$params[]  = $like;
 			$params[]  = $like;
@@ -273,7 +357,7 @@ class Site0_Ticketing_Tickets {
 
 		if ( '' !== $search ) {
 			$where    .= ' AND (subject LIKE %s OR message LIKE %s OR ticket_number LIKE %s)';
-			$like      = '%' . $wpdb->esc_like( ltrim( $search, '#' ) ) . '%';
+			$like      = '%' . $wpdb->esc_like( self::normalize_search( $search ) ) . '%';
 			$params[]  = $like;
 			$params[]  = $like;
 			$params[]  = $like;
@@ -311,7 +395,7 @@ class Site0_Ticketing_Tickets {
 
 		if ( '' !== $search ) {
 			$where    .= ' AND (subject LIKE %s OR message LIKE %s OR ticket_number LIKE %s)';
-			$like      = '%' . $wpdb->esc_like( ltrim( $search, '#' ) ) . '%';
+			$like      = '%' . $wpdb->esc_like( self::normalize_search( $search ) ) . '%';
 			$params[]  = $like;
 			$params[]  = $like;
 			$params[]  = $like;
