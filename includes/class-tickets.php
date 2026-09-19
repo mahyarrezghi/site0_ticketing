@@ -12,9 +12,10 @@ defined( 'ABSPATH' ) || exit;
  */
 class Site0_Ticketing_Tickets {
 
-	const STATUS_WAITING  = 'waiting';
-	const STATUS_ANSWERED = 'answered';
-	const STATUS_CLOSED   = 'closed';
+	const STATUS_WAITING     = 'waiting';
+	const STATUS_ANSWERED    = 'answered';
+	const STATUS_IN_PROGRESS = 'in_progress';
+	const STATUS_CLOSED      = 'closed';
 
 	/**
 	 * Allowed statuses and their sanitized keys.
@@ -23,9 +24,10 @@ class Site0_Ticketing_Tickets {
 	 */
 	public static function get_statuses() {
 		return array(
-			self::STATUS_WAITING  => __( 'Waiting', 'site0-ticketing' ),
-			self::STATUS_ANSWERED => __( 'Answered', 'site0-ticketing' ),
-			self::STATUS_CLOSED   => __( 'Closed', 'site0-ticketing' ),
+			self::STATUS_WAITING     => __( 'Waiting', 'site0-ticketing' ),
+			self::STATUS_ANSWERED    => __( 'Answered', 'site0-ticketing' ),
+			self::STATUS_IN_PROGRESS => __( 'In Progress', 'site0-ticketing' ),
+			self::STATUS_CLOSED      => __( 'Closed', 'site0-ticketing' ),
 		);
 	}
 

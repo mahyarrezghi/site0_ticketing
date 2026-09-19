@@ -36,6 +36,12 @@
 	border: 1px solid #bfe6c9;
 }
 
+.st-badge--in_progress {
+	background: #fef8ee;
+	color: #996800;
+	border: 1px solid #f0d9a8;
+}
+
 .st-badge--closed {
 	background: #f6f7f7;
 	color: #646970;
@@ -90,6 +96,15 @@
 
 .st-reply {
 	margin: 20px 0;
+}
+
+.st-in-progress-toggle {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-block: 8px;
+	color: #50575e;
+	font-weight: 600;
 }
 
 .st-actions {

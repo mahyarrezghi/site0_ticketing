@@ -79,9 +79,10 @@ class Site0_Ticketing_Network_List_Table extends Site0_Ticketing_Tenant_List_Tab
 	 */
 	public function get_bulk_actions() {
 		return array(
-			'close'   => __( 'Close', 'site0-ticketing' ),
-			'waiting' => __( 'Mark waiting', 'site0-ticketing' ),
-			'delete'  => __( 'Delete', 'site0-ticketing' ),
+			'close'       => __( 'Close', 'site0-ticketing' ),
+			'waiting'     => __( 'Mark waiting', 'site0-ticketing' ),
+			'in_progress' => __( 'Mark in progress', 'site0-ticketing' ),
+			'delete'      => __( 'Delete', 'site0-ticketing' ),
 		);
 	}
 
@@ -163,6 +164,7 @@ class Site0_Ticketing_Network_Page {
 	private function __construct() {
 		add_action( 'network_admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_post_site0_ticketing_network_reply', array( $this, 'handle_reply' ) );
+		add_action( 'admin_post_site0_ticketing_network_status', array( $this, 'handle_status' ) );
 		add_action( 'admin_post_site0_ticketing_network_close', array( $this, 'handle_close' ) );
 		add_action( 'admin_post_site0_ticketing_network_delete', array( $this, 'handle_delete' ) );
 		add_action( 'admin_post_site0_ticketing_network_settings', array( $this, 'handle_settings' ) );
@@ -368,11 +370,27 @@ class Site0_Ticketing_Network_Page {
 						<input type="hidden" name="action" value="site0_ticketing_network_reply" />
 						<input type="hidden" name="ticket_id" value="<?php echo (int) $ticket->id; ?>" />
 						<textarea class="large-text" name="message" rows="6" required></textarea>
+						<label class="st-in-progress-toggle">
+							<input type="checkbox" name="in_progress" value="1" />
+							<?php esc_html_e( 'Keep this ticket in progress (answered but not resolved)', 'site0-ticketing' ); ?>
+						</label>
 						<?php Site0_Ticketing_Tenant_Page::render_attachment_field( false ); ?>
 						<?php submit_button( __( 'Reply', 'site0-ticketing' ), 'primary', 'submit-reply' ); ?>
 					</form>
 
 					<div class="st-actions">
+						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+							<?php wp_nonce_field( 'site0_ticketing_network_status', 'site0_ticketing_nonce' ); ?>
+							<input type="hidden" name="action" value="site0_ticketing_network_status" />
+							<input type="hidden" name="ticket_id" value="<?php echo (int) $ticket->id; ?>" />
+							<?php if ( Site0_Ticketing_Tickets::STATUS_IN_PROGRESS === $ticket->status ) : ?>
+								<input type="hidden" name="status" value="<?php echo esc_attr( Site0_Ticketing_Tickets::STATUS_ANSWERED ); ?>" />
+								<?php submit_button( __( 'Mark Answered', 'site0-ticketing' ), 'secondary', 'submit-status' ); ?>
+							<?php else : ?>
+								<input type="hidden" name="status" value="<?php echo esc_attr( Site0_Ticketing_Tickets::STATUS_IN_PROGRESS ); ?>" />
+								<?php submit_button( __( 'Mark In Progress', 'site0-ticketing' ), 'secondary', 'submit-status' ); ?>
+							<?php endif; ?>
+						</form>
 						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 							<?php wp_nonce_field( 'site0_ticketing_network_close', 'site0_ticketing_nonce' ); ?>
 							<input type="hidden" name="action" value="site0_ticketing_network_close" />
@@ -459,11 +477,48 @@ class Site0_Ticketing_Network_Page {
 
 		Site0_Ticketing_Attachments::store( $attachments['files'], $ticket_id, (int) $reply_id );
 
-		// Admin reply sets status to answered, clears the admin unread flag
-		// so the menu bubble drops, and flags it unread for the tenant.
-		Site0_Ticketing_Tickets::set_status( $ticket_id, Site0_Ticketing_Tickets::STATUS_ANSWERED );
+		// Admin reply clears the admin unread flag so the menu bubble drops and
+		// flags it unread for the tenant. The reply sets the ticket to "answered"
+		// unless the admin chose to keep it "in progress".
+		$new_status = isset( $_POST['in_progress'] )
+			? Site0_Ticketing_Tickets::STATUS_IN_PROGRESS
+			: Site0_Ticketing_Tickets::STATUS_ANSWERED;
+
+		Site0_Ticketing_Tickets::set_status( $ticket_id, $new_status );
 		Site0_Ticketing_Tickets::mark_unread_by_tenant( $ticket_id );
 		Site0_Ticketing_Tickets::mark_read_by_admin( $ticket_id );
+
+		$this->redirect_to_ticket( $ticket_id );
+	}
+
+	/**
+	 * Handles standalone status changes (answered / in progress) from the network side.
+	 */
+	public function handle_status() {
+		$nonce = isset( $_POST['site0_ticketing_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['site0_ticketing_nonce'] ) ) : '';
+
+		if ( ! wp_verify_nonce( $nonce, 'site0_ticketing_network_status' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'site0-ticketing' ) );
+		}
+
+		if ( ! Site0_Ticketing_Capabilities::is_network_admin() ) {
+			wp_die( esc_html__( 'You are not allowed to do this.', 'site0-ticketing' ) );
+		}
+
+		$ticket_id = isset( $_POST['ticket_id'] ) ? (int) $_POST['ticket_id'] : 0;
+		$ticket    = Site0_Ticketing_Tickets::get( $ticket_id );
+
+		if ( ! $ticket ) {
+			wp_die( esc_html__( 'Ticket not found.', 'site0-ticketing' ) );
+		}
+
+		$status = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : '';
+
+		if ( ! in_array( $status, array( Site0_Ticketing_Tickets::STATUS_ANSWERED, Site0_Ticketing_Tickets::STATUS_IN_PROGRESS ), true ) ) {
+			wp_die( esc_html__( 'Invalid status.', 'site0-ticketing' ) );
+		}
+
+		Site0_Ticketing_Tickets::set_status( $ticket_id, $status );
 
 		$this->redirect_to_ticket( $ticket_id );
 	}
@@ -578,7 +633,7 @@ class Site0_Ticketing_Network_Page {
 
 		$bulk_action = ( '-1' === $action || '' === $action ) ? $action2 : $action;
 
-		if ( ! in_array( $bulk_action, array( 'close', 'waiting', 'delete' ), true ) ) {
+		if ( ! in_array( $bulk_action, array( 'close', 'waiting', 'in_progress', 'delete' ), true ) ) {
 			return;
 		}
 
@@ -596,6 +651,10 @@ class Site0_Ticketing_Network_Page {
 				case 'waiting':
 					Site0_Ticketing_Tickets::set_status( $ticket_id, Site0_Ticketing_Tickets::STATUS_WAITING );
 					Site0_Ticketing_Tickets::mark_unread_by_admin( $ticket_id );
+					break;
+				case 'in_progress':
+					Site0_Ticketing_Tickets::set_status( $ticket_id, Site0_Ticketing_Tickets::STATUS_IN_PROGRESS );
+					Site0_Ticketing_Tickets::mark_read_by_admin( $ticket_id );
 					break;
 				case 'delete':
 					Site0_Ticketing_Tickets::delete( $ticket_id );

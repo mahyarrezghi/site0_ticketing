@@ -15,12 +15,13 @@ Support ticketing for the Site0 WordPress multisite network.
 ## Features
 
 - Custom network DB tables (`wp_s0_tickets`, `wp_s0_ticket_replies`) — no per-site data, no blog switching.
-- Ticket stages: **waiting**, **answered**, **closed**.
+- Ticket stages: **waiting**, **answered**, **in progress**, **closed**.
   - Tenant replies move a ticket back to *waiting*.
   - Network admin replies set it to *answered* and flag it **unread for the tenant**.
+  - Admins can keep a ticket *in progress* (answer sent, work not finished) via a checkbox on the reply form, a toggle button, or the bulk action.
 - Unread bubbles in both the tenant menu and the network admin menu.
 - Per-site tenant access control (a tenant can only see tickets for their own site).
-- Network admin: search, status filtering, bulk close / mark-waiting / delete, single reply, close, reopen, delete.
+- Network admin: search, status filtering, bulk close / mark-waiting / mark-in-progress / delete, single reply, close, reopen, delete.
 - RTL-aware styles, translatable strings (text domain `site0-ticketing`), inherits the Site0 IRANSansX admin font.
 
 ## Installation

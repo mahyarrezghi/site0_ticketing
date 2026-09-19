@@ -29,6 +29,10 @@ msgid "Answered"
 msgstr "پاسخ داده شد"
 
 #. Status label
+msgid "In Progress"
+msgstr "در حال بررسی"
+
+#. Status label
 msgid "Closed"
 msgstr "بسته شده"
 
@@ -143,6 +147,21 @@ msgstr "بستن"
 
 msgid "Mark waiting"
 msgstr "علامت‌گذاری به‌عنوان در انتظار پاسخ"
+
+msgid "Mark in progress"
+msgstr "علامت‌گذاری به‌عنوان در حال بررسی"
+
+msgid "Mark In Progress"
+msgstr "در حال بررسی"
+
+msgid "Mark Answered"
+msgstr "علامت‌گذاری به‌عنوان پاسخ داده شده"
+
+msgid "Keep this ticket in progress (answered but not resolved)"
+msgstr "این تیکت در حال بررسی بماند (پاسخ داده شده اما هنوز حل نشده است)"
+
+msgid "Invalid status."
+msgstr "وضعیت نامعتبر است."
 
 msgid "Delete"
 msgstr "حذف"

@@ -327,6 +327,12 @@ class Site0_Ticketing_Tenant_Page {
 						<input type="hidden" name="action" value="site0_ticketing_reply" />
 						<input type="hidden" name="ticket_id" value="<?php echo (int) $ticket->id; ?>" />
 						<textarea class="large-text" name="message" rows="5" required></textarea>
+						<?php if ( Site0_Ticketing_Capabilities::is_network_admin() ) : ?>
+							<label class="st-in-progress-toggle">
+								<input type="checkbox" name="in_progress" value="1" />
+								<?php esc_html_e( 'Keep this ticket in progress (answered but not resolved)', 'site0-ticketing' ); ?>
+							</label>
+						<?php endif; ?>
 						<?php self::render_attachment_field( false ); ?>
 						<?php submit_button( __( 'Submit Reply', 'site0-ticketing' ) ); ?>
 					</form>
@@ -496,8 +502,13 @@ class Site0_Ticketing_Tenant_Page {
 		Site0_Ticketing_Attachments::store( $attachments['files'], $ticket_id, (int) $reply_id );
 
 		if ( $is_admin_reply ) {
-			// Admin reply answers the ticket and notifies the tenant.
-			Site0_Ticketing_Tickets::set_status( $ticket_id, Site0_Ticketing_Tickets::STATUS_ANSWERED );
+			// Admin reply answers the ticket and notifies the tenant, unless the
+			// admin chose to keep it in progress.
+			$new_status = isset( $_POST['in_progress'] )
+				? Site0_Ticketing_Tickets::STATUS_IN_PROGRESS
+				: Site0_Ticketing_Tickets::STATUS_ANSWERED;
+
+			Site0_Ticketing_Tickets::set_status( $ticket_id, $new_status );
 			Site0_Ticketing_Tickets::mark_unread_by_tenant( $ticket_id );
 		} else {
 			// Tenant reply moves the ticket back to "waiting" for the admin.
