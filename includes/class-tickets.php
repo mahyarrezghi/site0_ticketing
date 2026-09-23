@@ -475,6 +475,48 @@ class Site0_Ticketing_Tickets {
 	}
 
 	/**
+	 * Closes "answered" tickets whose most recent admin reply predates a threshold.
+	 *
+	 * Only tickets that have at least one admin reply are considered; tickets
+	 * still waiting on an admin response are left untouched.
+	 *
+	 * @param string $threshold MySQL datetime (site timezone). Admin replies older
+	 *                          than this are treated as stale.
+	 * @return int Number of tickets closed.
+	 */
+	public static function close_stale_answered( $threshold ) {
+		global $wpdb;
+
+		$tickets_table = $wpdb->base_prefix . 's0_tickets';
+		$replies_table = $wpdb->base_prefix . 's0_ticket_replies';
+
+		$ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT t.id
+				FROM {$tickets_table} t
+				INNER JOIN {$replies_table} r
+					ON r.ticket_id = t.id AND r.author_type = %s
+				WHERE t.status = %s
+				GROUP BY t.id
+				HAVING MAX(r.created_at) < %s",
+				Site0_Ticketing_Replies::AUTHOR_ADMIN,
+				self::STATUS_ANSWERED,
+				$threshold
+			)
+		);
+
+		$closed = 0;
+
+		foreach ( $ids as $ticket_id ) {
+			if ( self::set_status( (int) $ticket_id, self::STATUS_CLOSED ) ) {
+				$closed++;
+			}
+		}
+
+		return $closed;
+	}
+
+	/**
 	 * Marks a ticket unread by the network admin (e.g. tenant replied).
 	 *
 	 * @param int $ticket_id Ticket ID.

@@ -3,7 +3,7 @@
  * Plugin Name:       Site0 Ticketing
  * Plugin URI:        https://site0.ir
  * Description:       Support ticketing for the Site0 multisite network. Tenants open tickets from their subsite dashboard; network admins answer from the network dashboard.
- * Version:           1.3.0
+ * Version:           1.4.0
  * Requires at least: 5.0
  * Requires PHP:      7.4
  * Author:            Mahyar Rezghi
@@ -19,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SITE0_TICKETING_VERSION', '1.3.0' );
+define( 'SITE0_TICKETING_VERSION', '1.4.0' );
 define( 'SITE0_TICKETING_PLUGIN_FILE', __FILE__ );
 define( 'SITE0_TICKETING_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SITE0_TICKETING_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -28,6 +28,7 @@ require_once SITE0_TICKETING_PLUGIN_DIR . 'includes/class-install.php';
 require_once SITE0_TICKETING_PLUGIN_DIR . 'includes/class-capabilities.php';
 require_once SITE0_TICKETING_PLUGIN_DIR . 'includes/class-tickets.php';
 require_once SITE0_TICKETING_PLUGIN_DIR . 'includes/class-replies.php';
+require_once SITE0_TICKETING_PLUGIN_DIR . 'includes/class-auto-close.php';
 require_once SITE0_TICKETING_PLUGIN_DIR . 'includes/class-attachments.php';
 require_once SITE0_TICKETING_PLUGIN_DIR . 'includes/class-tenant-page.php';
 require_once SITE0_TICKETING_PLUGIN_DIR . 'includes/class-network-page.php';
@@ -69,11 +70,13 @@ final class Site0_Ticketing {
 		add_filter( 'all_plugins', array( $this, 'hide_from_subsites' ) );
 
 		register_activation_hook( __FILE__, array( 'Site0_Ticketing_Install', 'activate' ) );
+		register_deactivation_hook( __FILE__, array( 'Site0_Ticketing_Auto_Close', 'unschedule' ) );
 
 		Site0_Ticketing_Assets::instance();
 		Site0_Ticketing_Tenant_Page::instance();
 		Site0_Ticketing_Network_Page::instance();
 		Site0_Ticketing_Attachments::instance();
+		Site0_Ticketing_Auto_Close::instance();
 	}
 
 	/**

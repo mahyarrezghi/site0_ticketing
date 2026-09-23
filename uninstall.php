@@ -14,6 +14,9 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
+// Always stop the scheduled auto-close job, even when data is preserved.
+wp_clear_scheduled_hook( 'site0_ticketing_auto_close' );
+
 // Never drop data unless explicitly opted in.
 if ( 1 !== (int) get_site_option( 'site0_ticketing_delete_on_uninstall', 0 ) ) {
 	return;
@@ -71,3 +74,5 @@ if ( is_dir( $dir ) && false !== strpos( realpath( $dir ), (string) realpath( un
 
 delete_site_option( 'site0_ticketing_db_version' );
 delete_site_option( 'site0_ticketing_delete_on_uninstall' );
+delete_site_option( 'site0_ticketing_auto_close_enabled' );
+delete_site_option( 'site0_ticketing_auto_close_days' );

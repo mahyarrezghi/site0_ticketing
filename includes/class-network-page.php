@@ -275,6 +275,27 @@ class Site0_Ticketing_Network_Page {
 					<p class="description">
 						<?php esc_html_e( 'If unchecked, tickets and replies are kept in the database after uninstall. Uninstalling never affects other sites.', 'site0-ticketing' ); ?>
 					</p>
+					<hr />
+					<label>
+						<input type="checkbox" name="auto_close_enabled" value="1" <?php checked( 1, (int) Site0_Ticketing_Auto_Close::is_enabled() ); ?> />
+						<?php esc_html_e( 'Automatically close answered tickets', 'site0-ticketing' ); ?>
+					</label>
+					<p>
+						<label for="site0_ticketing_auto_close_days">
+							<?php esc_html_e( 'Close after this many days since the last admin reply:', 'site0-ticketing' ); ?>
+						</label>
+						<input
+							type="number"
+							id="site0_ticketing_auto_close_days"
+							name="auto_close_days"
+							min="1"
+							step="1"
+							value="<?php echo esc_attr( Site0_Ticketing_Auto_Close::get_days() ); ?>"
+						/>
+					</p>
+					<p class="description">
+						<?php esc_html_e( 'Only tickets in the "Answered" status that have received at least one admin reply are closed. Tickets awaiting an admin response are never closed automatically.', 'site0-ticketing' ); ?>
+					</p>
 					<?php submit_button( __( 'Save Settings', 'site0-ticketing' ), 'secondary', 'submit-settings' ); ?>
 				</form>
 			</div>
@@ -606,6 +627,18 @@ class Site0_Ticketing_Network_Page {
 		$delete_on_uninstall = isset( $_POST['delete_on_uninstall'] ) ? 1 : 0;
 
 		update_site_option( 'site0_ticketing_delete_on_uninstall', $delete_on_uninstall );
+
+		$auto_close_enabled = isset( $_POST['auto_close_enabled'] ) ? 1 : 0;
+		$auto_close_days    = isset( $_POST['auto_close_days'] ) ? max( 1, (int) $_POST['auto_close_days'] ) : Site0_Ticketing_Auto_Close::DEFAULT_DAYS;
+
+		update_site_option( Site0_Ticketing_Auto_Close::OPTION_ENABLED, $auto_close_enabled );
+		update_site_option( Site0_Ticketing_Auto_Close::OPTION_DAYS, $auto_close_days );
+
+		if ( $auto_close_enabled ) {
+			Site0_Ticketing_Auto_Close::instance()->ensure_scheduled();
+		} else {
+			Site0_Ticketing_Auto_Close::unschedule();
+		}
 
 		wp_safe_redirect(
 			add_query_arg(
