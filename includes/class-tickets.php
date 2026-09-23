@@ -287,11 +287,12 @@ class Site0_Ticketing_Tickets {
 			$params[]  = $like;
 		}
 
+		$params[] = self::STATUS_CLOSED;
 		$params[] = (int) $limit;
 		$params[] = (int) $offset;
 
 		$sql = $wpdb->prepare(
-			"SELECT * FROM {$table} {$where} ORDER BY updated_at DESC LIMIT %d OFFSET %d",
+			"SELECT * FROM {$table} {$where} ORDER BY (status = %s) ASC, updated_at DESC LIMIT %d OFFSET %d",
 			$params
 		);
 
@@ -363,11 +364,12 @@ class Site0_Ticketing_Tickets {
 			$params[]  = $like;
 		}
 
+		$params[] = self::STATUS_CLOSED;
 		$params[] = (int) $limit;
 		$params[] = (int) $offset;
 
 		$sql = $wpdb->prepare(
-			"SELECT * FROM {$table} {$where} ORDER BY updated_at DESC LIMIT %d OFFSET %d",
+			"SELECT * FROM {$table} {$where} ORDER BY (status = %s) ASC, updated_at DESC LIMIT %d OFFSET %d",
 			$params
 		);
 
