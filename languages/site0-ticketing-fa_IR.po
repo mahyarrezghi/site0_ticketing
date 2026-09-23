@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Site0 Ticketing plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Site0 Ticketing 1.1.0\n"
+"Project-Id-Version: Site0 Ticketing 1.5.0\n"
 "Report-Msgid-Bugs-To: https://site0.com\n"
 "POT-Creation-Date: 2026-09-02 00:00+0000\n"
 "PO-Revision-Date: 2026-09-02 23:59+0330\n"
@@ -138,6 +138,15 @@ msgstr "حذف کامل داده‌های تیکت هنگام حذف افزون�
 
 msgid "If unchecked, tickets and replies are kept in the database after uninstall. Uninstalling never affects other sites."
 msgstr "در صورت عدم انتخاب، تیکت‌ها و پاسخ‌ها پس از حذف افزونه در پایگاه‌داده باقی می‌مانند. حذف افزونه هرگز بر سایت‌های دیگر اثری ندارد."
+
+msgid "Automatically close answered tickets"
+msgstr "بستن خودکار تیکت‌های پاسخ‌داده‌شده"
+
+msgid "Close after this many days since the last admin reply:"
+msgstr "بستن پس از این تعداد روز از آخرین پاسخ مدیر:"
+
+msgid "Only tickets in the \"Answered\" status that have received at least one admin reply are closed. Tickets awaiting an admin response are never closed automatically."
+msgstr "فقط تیکت‌هایی که در وضعیت «پاسخ داده شد» هستند و حداقل یک پاسخ از مدیر دریافت کرده‌اند بسته می‌شوند. تیکت‌هایی که در انتظار پاسخ مدیر هستند هرگز به‌صورت خودکار بسته نمی‌شوند."
 
 msgid "Site"
 msgstr "سایت"
