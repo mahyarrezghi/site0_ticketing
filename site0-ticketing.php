@@ -3,7 +3,7 @@
  * Plugin Name:       Site0 Ticketing
  * Plugin URI:        https://site0.ir
  * Description:       Support ticketing for the Site0 multisite network. Tenants open tickets from their subsite dashboard; network admins answer from the network dashboard.
- * Version:           1.5.0
+ * Version:           1.6.0
  * Requires at least: 5.0
  * Requires PHP:      7.4
  * Author:            Mahyar Rezghi
@@ -19,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SITE0_TICKETING_VERSION', '1.5.0' );
+define( 'SITE0_TICKETING_VERSION', '1.6.0' );
 define( 'SITE0_TICKETING_PLUGIN_FILE', __FILE__ );
 define( 'SITE0_TICKETING_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SITE0_TICKETING_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -32,7 +32,6 @@ require_once SITE0_TICKETING_PLUGIN_DIR . 'includes/class-auto-close.php';
 require_once SITE0_TICKETING_PLUGIN_DIR . 'includes/class-attachments.php';
 require_once SITE0_TICKETING_PLUGIN_DIR . 'includes/class-tenant-page.php';
 require_once SITE0_TICKETING_PLUGIN_DIR . 'includes/class-network-page.php';
-require_once SITE0_TICKETING_PLUGIN_DIR . 'includes/class-assets.php';
 
 /**
  * Main plugin class.
@@ -42,41 +41,38 @@ require_once SITE0_TICKETING_PLUGIN_DIR . 'includes/class-assets.php';
 final class Site0_Ticketing {
 
 	/**
-	 * Singleton instance.
-	 *
-	 * @var Site0_Ticketing|null
-	 */
-	private static $instance = null;
-
-	/**
-	 * Returns the single instance.
-	 *
-	 * @return Site0_Ticketing
-	 */
-	public static function instance() {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
-
-	/**
 	 * Constructor. Hooks everything together.
 	 */
-	private function __construct() {
+	public function __construct() {
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_init', array( 'Site0_Ticketing_Install', 'maybe_upgrade' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 		add_filter( 'all_plugins', array( $this, 'hide_from_subsites' ) );
 
 		register_activation_hook( __FILE__, array( 'Site0_Ticketing_Install', 'activate' ) );
 		register_deactivation_hook( __FILE__, array( 'Site0_Ticketing_Auto_Close', 'unschedule' ) );
 
-		Site0_Ticketing_Assets::instance();
-		Site0_Ticketing_Tenant_Page::instance();
-		Site0_Ticketing_Network_Page::instance();
-		Site0_Ticketing_Attachments::instance();
-		Site0_Ticketing_Auto_Close::instance();
+		new Site0_Ticketing_Tenant_Page();
+		new Site0_Ticketing_Network_Page();
+	}
+
+	/**
+	 * Loads the stylesheet only on ticket screens.
+	 *
+	 * @param string $hook Current admin screen.
+	 */
+	public function enqueue_styles( $hook ) {
+		if ( false === strpos( $hook, 'site0-ticketing' ) ) {
+			return;
+		}
+
+		wp_enqueue_style(
+			'site0-ticketing-admin',
+			SITE0_TICKETING_PLUGIN_URL . 'assets/css/admin.css',
+			array(),
+			SITE0_TICKETING_VERSION
+		);
 	}
 
 	/**
@@ -125,4 +121,4 @@ final class Site0_Ticketing {
 	}
 }
 
-Site0_Ticketing::instance();
+new Site0_Ticketing();

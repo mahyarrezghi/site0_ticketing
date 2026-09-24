@@ -19,34 +19,6 @@ class Site0_Ticketing_Auto_Close {
 	const DEFAULT_DAYS    = 5;
 
 	/**
-	 * Singleton.
-	 *
-	 * @var Site0_Ticketing_Auto_Close|null
-	 */
-	private static $instance = null;
-
-	/**
-	 * Returns singleton.
-	 *
-	 * @return Site0_Ticketing_Auto_Close
-	 */
-	public static function instance() {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
-	}
-
-	/**
-	 * Hooks.
-	 */
-	private function __construct() {
-		add_action( 'init', array( $this, 'ensure_scheduled' ) );
-		add_action( self::CRON_HOOK, array( $this, 'run' ) );
-	}
-
-	/**
 	 * Whether automatic closing is enabled.
 	 *
 	 * @return bool
@@ -67,7 +39,7 @@ class Site0_Ticketing_Auto_Close {
 	/**
 	 * Schedules the daily event when enabled and not already scheduled.
 	 */
-	public function ensure_scheduled() {
+	public static function ensure_scheduled() {
 		if ( ! self::is_enabled() ) {
 			self::unschedule();
 			return;
@@ -94,7 +66,7 @@ class Site0_Ticketing_Auto_Close {
 	/**
 	 * Closes answered tickets whose last admin reply is older than the threshold.
 	 */
-	public function run() {
+	public static function run() {
 		if ( ! self::is_enabled() ) {
 			return;
 		}
@@ -106,3 +78,6 @@ class Site0_Ticketing_Auto_Close {
 		Site0_Ticketing_Tickets::close_stale_answered( $threshold );
 	}
 }
+
+add_action( 'init', array( 'Site0_Ticketing_Auto_Close', 'ensure_scheduled' ) );
+add_action( Site0_Ticketing_Auto_Close::CRON_HOOK, array( 'Site0_Ticketing_Auto_Close', 'run' ) );

@@ -22,22 +22,6 @@ class Site0_Ticketing_Capabilities {
 	}
 
 	/**
-	 * Whether the current user can manage tickets for a given blog.
-	 *
-	 * The user must be a manager of that specific blog. Network admins always pass.
-	 *
-	 * @param int $blog_id Blog to check against.
-	 * @return bool
-	 */
-	public static function can_manage_tickets_for_blog( $blog_id ) {
-		if ( self::is_network_admin() ) {
-			return true;
-		}
-
-		return current_user_can_for_blog( (int) $blog_id, 'manage_options' );
-	}
-
-	/**
 	 * Whether the current user may view a specific ticket.
 	 *
 	 * @param object $ticket Ticket row.

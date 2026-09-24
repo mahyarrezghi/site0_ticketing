@@ -52,9 +52,9 @@ class Site0_Ticketing_Tenant_List_Table extends WP_List_Table {
 		$status  = isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : '';
 		$search  = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
 
-		$this->items = Site0_Ticketing_Tickets::list_by_blog( $blog_id, $per_page, 0, $status, $search );
+		$this->items = Site0_Ticketing_Tickets::list_tickets( $blog_id, $per_page, 0, $status, $search );
 
-		$total = Site0_Ticketing_Tickets::count_by_blog( $blog_id, $status, $search );
+		$total = Site0_Ticketing_Tickets::count_tickets( $blog_id, $status, $search );
 
 		$this->set_pagination_args(
 			array(
@@ -149,28 +149,9 @@ class Site0_Ticketing_Tenant_List_Table extends WP_List_Table {
 class Site0_Ticketing_Tenant_Page {
 
 	/**
-	 * Singleton.
-	 *
-	 * @var Site0_Ticketing_Tenant_Page|null
-	 */
-	private static $instance = null;
-
-	/**
-	 * Returns singleton.
-	 *
-	 * @return Site0_Ticketing_Tenant_Page
-	 */
-	public static function instance() {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
-
-	/**
 	 * Hooks.
 	 */
-	private function __construct() {
+	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_post_site0_ticketing_create', array( $this, 'handle_create' ) );
 		add_action( 'admin_post_site0_ticketing_reply', array( $this, 'handle_reply' ) );
@@ -369,7 +350,7 @@ class Site0_Ticketing_Tenant_Page {
 		if ( $in_table ) {
 			?>
 			<tr class="st-attachment-field">
-				<th scope="row"><?php self::render_attachment_label(); ?></th>
+				<th scope="row"><label for="st-attachments"><?php esc_html_e( 'Attachments', 'site0-ticketing' ); ?></label></th>
 				<td>
 					<?php self::render_attachment_input(); ?>
 				</td>
@@ -378,20 +359,11 @@ class Site0_Ticketing_Tenant_Page {
 		} else {
 			?>
 			<div class="st-attachment-field">
-				<?php self::render_attachment_label(); ?>
+				<label for="st-attachments"><?php esc_html_e( 'Attachments', 'site0-ticketing' ); ?></label>
 				<?php self::render_attachment_input(); ?>
 			</div>
 			<?php
 		}
-	}
-
-	/**
-	 * Renders the label for the attachment input.
-	 */
-	private static function render_attachment_label() {
-		?>
-		<label for="st-attachments"><?php esc_html_e( 'Attachments', 'site0-ticketing' ); ?></label>
-		<?php
 	}
 
 	/**

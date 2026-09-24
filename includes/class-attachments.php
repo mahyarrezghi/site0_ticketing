@@ -49,32 +49,6 @@ class Site0_Ticketing_Attachments {
 	);
 
 	/**
-	 * Singleton.
-	 *
-	 * @var Site0_Ticketing_Attachments|null
-	 */
-	private static $instance = null;
-
-	/**
-	 * Returns singleton.
-	 *
-	 * @return Site0_Ticketing_Attachments
-	 */
-	public static function instance() {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
-
-	/**
-	 * Hooks.
-	 */
-	private function __construct() {
-		add_action( 'admin_post_site0_ticketing_download', array( $this, 'handle_download' ) );
-	}
-
-	/**
 	 * Maximum upload size per file in bytes.
 	 *
 	 * @return int
@@ -150,11 +124,6 @@ class Site0_Ticketing_Attachments {
 			@file_put_contents( $htaccess, "Options -Indexes\n<IfModule mod_authz_core.c>\n\tRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\n\tDeny from all\n</IfModule>\n" );
 		}
 
-		$index = trailingslashit( $dir ) . 'index.php';
-
-		if ( ! file_exists( $index ) ) {
-			@file_put_contents( $index, "<?php\n// Silence is golden.\n" );
-		}
 	}
 
 	/**
@@ -300,14 +269,6 @@ class Site0_Ticketing_Attachments {
 				if ( is_string( $mime ) && '' !== $mime ) {
 					return $mime;
 				}
-			}
-		}
-
-		if ( function_exists( 'mime_content_type' ) ) {
-			$mime = mime_content_type( $path );
-
-			if ( is_string( $mime ) && '' !== $mime ) {
-				return $mime;
 			}
 		}
 
@@ -570,7 +531,7 @@ class Site0_Ticketing_Attachments {
 	/**
 	 * Streams an attachment after verifying access.
 	 */
-	public function handle_download() {
+	public static function handle_download() {
 		$attachment_id = isset( $_GET['attachment'] ) ? (int) $_GET['attachment'] : 0;
 		$nonce         = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 
@@ -616,40 +577,6 @@ class Site0_Ticketing_Attachments {
 	}
 
 	/**
-	 * Renders the attachments block for one thread entry.
-	 *
-	 * @param object $attachment Attachment row.
-	 * @return string HTML.
-	 */
-	public static function render_item( $attachment ) {
-		$url      = self::download_url( $attachment );
-		$name     = $attachment->file_name;
-		$template = '<a class="st-attachment" href="%1$s" target="_blank" rel="noopener">%2$s<span class="st-attachment__name">%3$s</span></a>';
-
-		if ( self::is_image( $attachment->mime_type ) ) {
-			$html = sprintf(
-				$template,
-				esc_url( $url ),
-				sprintf(
-					'<img class="st-attachment__thumb" src="%1$s" alt="%2$s" />',
-					esc_url( $url ),
-					esc_attr( $name )
-				),
-				esc_html( $name )
-			);
-		} else {
-			$html = sprintf(
-				$template,
-				esc_url( $url ),
-				'<span class="dashicons dashicons-media-archive st-attachment__icon" aria-hidden="true"></span>',
-				esc_html( $name ) . ' <span class="st-meta">' . esc_html( size_format( (int) $attachment->file_size ) ) . '</span>'
-			);
-		}
-
-		return $html;
-	}
-
-	/**
 	 * Echoes the attachment list for a thread entry.
 	 *
 	 * @param array $map      Map from map_for_ticket() for the ticket.
@@ -664,10 +591,36 @@ class Site0_Ticketing_Attachments {
 
 		echo '<div class="st-attachments">';
 
-		foreach ( $items as $item ) {
-			echo wp_kses_post( self::render_item( $item ) );
+		foreach ( $items as $attachment ) {
+			$url      = self::download_url( $attachment );
+			$name     = $attachment->file_name;
+			$template = '<a class="st-attachment" href="%1$s" target="_blank" rel="noopener">%2$s<span class="st-attachment__name">%3$s</span></a>';
+
+			if ( self::is_image( $attachment->mime_type ) ) {
+				$html = sprintf(
+					$template,
+					esc_url( $url ),
+					sprintf(
+						'<img class="st-attachment__thumb" src="%1$s" alt="%2$s" />',
+						esc_url( $url ),
+						esc_attr( $name )
+					),
+					esc_html( $name )
+				);
+			} else {
+				$html = sprintf(
+					$template,
+					esc_url( $url ),
+					'<span class="dashicons dashicons-media-archive st-attachment__icon" aria-hidden="true"></span>',
+					esc_html( $name ) . ' <span class="st-meta">' . esc_html( size_format( (int) $attachment->file_size ) ) . '</span>'
+				);
+			}
+
+			echo wp_kses_post( $html );
 		}
 
 		echo '</div>';
 	}
 }
+
+add_action( 'admin_post_site0_ticketing_download', array( 'Site0_Ticketing_Attachments', 'handle_download' ) );

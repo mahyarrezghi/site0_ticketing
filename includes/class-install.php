@@ -25,9 +25,7 @@ class Site0_Ticketing_Install {
 			wp_die( esc_html__( 'Site0 Ticketing can only be activated network-wide from the Network Admin.', 'site0-ticketing' ) );
 		}
 
-		self::create_tables();
-		self::backfill_ticket_numbers();
-		update_site_option( self::DB_VERSION_OPTION, self::SCHEMA_VERSION );
+		self::install_or_upgrade();
 	}
 
 	/**
@@ -37,10 +35,17 @@ class Site0_Ticketing_Install {
 		$version = get_site_option( self::DB_VERSION_OPTION, '0' );
 
 		if ( version_compare( $version, self::SCHEMA_VERSION, '<' ) ) {
-			self::create_tables();
-			self::backfill_ticket_numbers();
-			update_site_option( self::DB_VERSION_OPTION, self::SCHEMA_VERSION );
+			self::install_or_upgrade();
 		}
+	}
+
+	/**
+	 * Creates/updates the tables and records the schema version.
+	 */
+	private static function install_or_upgrade() {
+		self::create_tables();
+		self::backfill_ticket_numbers();
+		update_site_option( self::DB_VERSION_OPTION, self::SCHEMA_VERSION );
 	}
 
 	/**

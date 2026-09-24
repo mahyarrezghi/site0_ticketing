@@ -17,13 +17,6 @@ if ( ! class_exists( 'Site0_Ticketing_Tenant_List_Table' ) ) {
 class Site0_Ticketing_Network_List_Table extends Site0_Ticketing_Tenant_List_Table {
 
 	/**
-	 * Constructor.
-	 */
-	public function __construct() {
-		parent::__construct();
-	}
-
-	/**
 	 * Base admin URL used for ticket links (network admin).
 	 *
 	 * @return string
@@ -43,9 +36,9 @@ class Site0_Ticketing_Network_List_Table extends Site0_Ticketing_Tenant_List_Tab
 		$status = isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : '';
 		$search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
 
-		$this->items = Site0_Ticketing_Tickets::list_network( $per_page, 0, $status, $search );
+		$this->items = Site0_Ticketing_Tickets::list_tickets( 0, $per_page, 0, $status, $search );
 
-		$total = Site0_Ticketing_Tickets::count_network( $status, $search );
+		$total = Site0_Ticketing_Tickets::count_tickets( 0, $status, $search );
 
 		$this->set_pagination_args(
 			array(
@@ -140,28 +133,9 @@ class Site0_Ticketing_Network_List_Table extends Site0_Ticketing_Tenant_List_Tab
 class Site0_Ticketing_Network_Page {
 
 	/**
-	 * Singleton.
-	 *
-	 * @var Site0_Ticketing_Network_Page|null
-	 */
-	private static $instance = null;
-
-	/**
-	 * Returns singleton.
-	 *
-	 * @return Site0_Ticketing_Network_Page
-	 */
-	public static function instance() {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
-
-	/**
 	 * Hooks.
 	 */
-	private function __construct() {
+	public function __construct() {
 		add_action( 'network_admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_post_site0_ticketing_network_reply', array( $this, 'handle_reply' ) );
 		add_action( 'admin_post_site0_ticketing_network_status', array( $this, 'handle_status' ) );
@@ -635,7 +609,7 @@ class Site0_Ticketing_Network_Page {
 		update_site_option( Site0_Ticketing_Auto_Close::OPTION_DAYS, $auto_close_days );
 
 		if ( $auto_close_enabled ) {
-			Site0_Ticketing_Auto_Close::instance()->ensure_scheduled();
+			Site0_Ticketing_Auto_Close::ensure_scheduled();
 		} else {
 			Site0_Ticketing_Auto_Close::unschedule();
 		}

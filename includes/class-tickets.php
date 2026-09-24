@@ -258,41 +258,63 @@ class Site0_Ticketing_Tickets {
 	}
 
 	/**
-	 * Fetches tickets for a blog, newest first.
+	 * Builds the shared WHERE clause and params for ticket list/count queries.
 	 *
-	 * @param int    $blog_id Blog ID.
+	 * @param int    $blog_id Blog ID, 0 for the whole network.
+	 * @param string $status  Optional status filter.
+	 * @param string $search  Optional search term.
+	 * @return array { @type string $where SQL condition. @type array $params Bound values. }
+	 */
+	private static function build_filters( $blog_id, $status, $search ) {
+		global $wpdb;
+
+		$where  = 'WHERE 1=1';
+		$params = array();
+
+		if ( $blog_id > 0 ) {
+			$where   .= ' AND blog_id = %d';
+			$params[] = (int) $blog_id;
+		}
+
+		if ( '' !== $status ) {
+			$where   .= ' AND status = %s';
+			$params[] = self::sanitize_status( $status );
+		}
+
+		if ( '' !== $search ) {
+			$where   .= ' AND (subject LIKE %s OR message LIKE %s OR ticket_number LIKE %s)';
+			$like     = '%' . $wpdb->esc_like( self::normalize_search( $search ) ) . '%';
+			$params[] = $like;
+			$params[] = $like;
+			$params[] = $like;
+		}
+
+		return array( 'where' => $where, 'params' => $params );
+	}
+
+	/**
+	 * Fetches tickets, newest first. Pass 0 for $blog_id to span the network.
+	 *
+	 * @param int    $blog_id Blog ID, 0 for the whole network.
 	 * @param int    $limit   Number of rows.
 	 * @param int    $offset  Offset for pagination.
 	 * @param string $status  Optional status filter.
 	 * @param string $search  Optional search term.
 	 * @return object[]
 	 */
-	public static function list_by_blog( $blog_id, $limit = 20, $offset = 0, $status = '', $search = '' ) {
+	public static function list_tickets( $blog_id = 0, $limit = 20, $offset = 0, $status = '', $search = '' ) {
 		global $wpdb;
 
 		$table  = $wpdb->base_prefix . 's0_tickets';
-		$where  = 'WHERE blog_id = %d';
-		$params = array( (int) $blog_id );
+		$filter = self::build_filters( $blog_id, $status, $search );
 
-		if ( '' !== $status ) {
-			$where    .= ' AND status = %s';
-			$params[] = self::sanitize_status( $status );
-		}
-
-		if ( '' !== $search ) {
-			$where    .= ' AND (subject LIKE %s OR message LIKE %s OR ticket_number LIKE %s)';
-			$like      = '%' . $wpdb->esc_like( self::normalize_search( $search ) ) . '%';
-			$params[]  = $like;
-			$params[]  = $like;
-			$params[]  = $like;
-		}
-
+		$params   = $filter['params'];
 		$params[] = self::STATUS_CLOSED;
 		$params[] = (int) $limit;
 		$params[] = (int) $offset;
 
 		$sql = $wpdb->prepare(
-			"SELECT * FROM {$table} {$where} ORDER BY (status = %s) ASC, updated_at DESC LIMIT %d OFFSET %d",
+			"SELECT * FROM {$table} {$filter['where']} ORDER BY (status = %s) ASC, updated_at DESC LIMIT %d OFFSET %d",
 			$params
 		);
 
@@ -300,113 +322,22 @@ class Site0_Ticketing_Tickets {
 	}
 
 	/**
-	 * Counts tickets for a blog.
+	 * Counts tickets. Pass 0 for $blog_id to span the network.
 	 *
-	 * @param int    $blog_id Blog ID.
+	 * @param int    $blog_id Blog ID, 0 for the whole network.
 	 * @param string $status  Optional status filter.
 	 * @param string $search  Optional search term.
 	 * @return int
 	 */
-	public static function count_by_blog( $blog_id, $status = '', $search = '' ) {
+	public static function count_tickets( $blog_id = 0, $status = '', $search = '' ) {
 		global $wpdb;
 
 		$table  = $wpdb->base_prefix . 's0_tickets';
-		$where  = 'WHERE blog_id = %d';
-		$params = array( (int) $blog_id );
+		$filter = self::build_filters( $blog_id, $status, $search );
 
-		if ( '' !== $status ) {
-			$where    .= ' AND status = %s';
-			$params[] = self::sanitize_status( $status );
-		}
-
-		if ( '' !== $search ) {
-			$where    .= ' AND (subject LIKE %s OR message LIKE %s OR ticket_number LIKE %s)';
-			$like      = '%' . $wpdb->esc_like( self::normalize_search( $search ) ) . '%';
-			$params[]  = $like;
-			$params[]  = $like;
-			$params[]  = $like;
-		}
-
-		$sql = $wpdb->prepare(
-			"SELECT COUNT(*) FROM {$table} {$where}",
-			$params
-		);
-
-		return (int) $wpdb->get_var( $sql );
-	}
-
-	/**
-	 * Fetches tickets across the network, newest first.
-	 *
-	 * @param int    $limit   Number of rows.
-	 * @param int    $offset  Offset for pagination.
-	 * @param string $status  Optional status filter.
-	 * @param string $search  Optional search term.
-	 * @return object[]
-	 */
-	public static function list_network( $limit = 20, $offset = 0, $status = '', $search = '' ) {
-		global $wpdb;
-
-		$table  = $wpdb->base_prefix . 's0_tickets';
-		$where  = 'WHERE 1=1';
-		$params = array();
-
-		if ( '' !== $status ) {
-			$where    .= ' AND status = %s';
-			$params[] = self::sanitize_status( $status );
-		}
-
-		if ( '' !== $search ) {
-			$where    .= ' AND (subject LIKE %s OR message LIKE %s OR ticket_number LIKE %s)';
-			$like      = '%' . $wpdb->esc_like( self::normalize_search( $search ) ) . '%';
-			$params[]  = $like;
-			$params[]  = $like;
-			$params[]  = $like;
-		}
-
-		$params[] = self::STATUS_CLOSED;
-		$params[] = (int) $limit;
-		$params[] = (int) $offset;
-
-		$sql = $wpdb->prepare(
-			"SELECT * FROM {$table} {$where} ORDER BY (status = %s) ASC, updated_at DESC LIMIT %d OFFSET %d",
-			$params
-		);
-
-		return $wpdb->get_results( $sql );
-	}
-
-	/**
-	 * Counts tickets across the network.
-	 *
-	 * @param string $status Optional status filter.
-	 * @param string $search Optional search term.
-	 * @return int
-	 */
-	public static function count_network( $status = '', $search = '' ) {
-		global $wpdb;
-
-		$table  = $wpdb->base_prefix . 's0_tickets';
-		$where  = 'WHERE 1=1';
-		$params = array();
-
-		if ( '' !== $status ) {
-			$where    .= ' AND status = %s';
-			$params[] = self::sanitize_status( $status );
-		}
-
-		if ( '' !== $search ) {
-			$where    .= ' AND (subject LIKE %s OR message LIKE %s OR ticket_number LIKE %s)';
-			$like      = '%' . $wpdb->esc_like( self::normalize_search( $search ) ) . '%';
-			$params[]  = $like;
-			$params[]  = $like;
-			$params[]  = $like;
-		}
-
-		$sql = $wpdb->prepare(
-			"SELECT COUNT(*) FROM {$table} {$where}",
-			$params
-		);
+		$sql = $filter['params']
+			? $wpdb->prepare( "SELECT COUNT(*) FROM {$table} {$filter['where']}", $filter['params'] )
+			: "SELECT COUNT(*) FROM {$table} {$filter['where']}";
 
 		return (int) $wpdb->get_var( $sql );
 	}
@@ -525,7 +456,17 @@ class Site0_Ticketing_Tickets {
 	 * @return bool
 	 */
 	public static function mark_unread_by_admin( $ticket_id ) {
-		return self::flag( $ticket_id, 'unread_by_admin', 1 );
+		global $wpdb;
+
+		$result = $wpdb->update(
+			$wpdb->base_prefix . 's0_tickets',
+			array( 'unread_by_admin' => 1 ),
+			array( 'id' => (int) $ticket_id ),
+			array( '%d' ),
+			array( '%d' )
+		);
+
+		return false !== $result;
 	}
 
 	/**
@@ -535,7 +476,17 @@ class Site0_Ticketing_Tickets {
 	 * @return bool
 	 */
 	public static function mark_read_by_admin( $ticket_id ) {
-		return self::flag( $ticket_id, 'unread_by_admin', 0 );
+		global $wpdb;
+
+		$result = $wpdb->update(
+			$wpdb->base_prefix . 's0_tickets',
+			array( 'unread_by_admin' => 0 ),
+			array( 'id' => (int) $ticket_id ),
+			array( '%d' ),
+			array( '%d' )
+		);
+
+		return false !== $result;
 	}
 
 	/**
@@ -565,30 +516,11 @@ class Site0_Ticketing_Tickets {
 	 * @return bool
 	 */
 	public static function mark_unread_by_tenant( $ticket_id ) {
-		return self::flag( $ticket_id, 'unread_by_tenant', 1 );
-	}
-
-	/**
-	 * Sets a single flag column.
-	 *
-	 * @param int    $ticket_id Ticket ID.
-	 * @param string $column    Column name.
-	 * @param int    $value     0 or 1.
-	 * @return bool
-	 */
-	private static function flag( $ticket_id, $column, $value ) {
 		global $wpdb;
 
-		$table = $wpdb->base_prefix . 's0_tickets';
-		$allow = array( 'unread_by_tenant', 'unread_by_admin' );
-
-		if ( ! in_array( $column, $allow, true ) ) {
-			return false;
-		}
-
 		$result = $wpdb->update(
-			$table,
-			array( $column => (int) $value ),
+			$wpdb->base_prefix . 's0_tickets',
+			array( 'unread_by_tenant' => 1 ),
 			array( 'id' => (int) $ticket_id ),
 			array( '%d' ),
 			array( '%d' )

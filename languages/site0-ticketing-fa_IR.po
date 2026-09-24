@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Site0 Ticketing plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Site0 Ticketing 1.5.0\n"
+"Project-Id-Version: Site0 Ticketing 1.6.0\n"
 "Report-Msgid-Bugs-To: https://site0.com\n"
 "POT-Creation-Date: 2026-09-02 00:00+0000\n"
 "PO-Revision-Date: 2026-09-02 23:59+0330\n"
